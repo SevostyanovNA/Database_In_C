@@ -1,21 +1,7 @@
 #include <stdio.h>
-#include <conio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 
-int nul = 0;
-int flag = 0;
-
-//Сигнатуры функций
-int kolvo(FILE* fl);
-char* read_a_string();
-void List(FILE* fl, int s);
-char* Str(FILE* fl);
-struct Student* mcdir(struct Student* S, int o, FILE* fl);
-void AddaStd(FILE* fl, int strok);
-void find_this_MF(FILE* fl, int strok);
-
-/* Структура для хранения информации про одного человека */
 struct Student{
     char* ID;
     char* Fathersname;
@@ -24,6 +10,21 @@ struct Student{
     char* Faculty;
     char* Dir;
 };
+
+//Сигнатуры функций
+
+/*Базовые функции для обработки данных*/
+int kolvo(FILE* fl);
+char* read_a_string();
+char* Str(FILE* fl);
+/*Создание списка*/
+void List(FILE* fl, int s);
+struct Student* mcdir(struct Student* S, int o, FILE* fl);
+/*Функции БД*/
+void AddaStd(FILE* fl, int strok);
+void find_this_MF(FILE* fl, int strok);
+void delete(FILE* fl, int strok);
+
 
 int main() {
 
@@ -34,8 +35,8 @@ int main() {
     printf("What do you want to do?\n");
     printf("1)See the list\n" "2)Add a Student\n" "3)Delete a Student by ID\n" "4)Find a student by ID\n" "5)Save 'n Exit\n");
     scanf("%i", &i);
-    if(i<1 || i > 5) printf("No such a function");
     while(1) {
+        if(i<1 || i > 5) printf("No such a function");
         switch (i) {
             case 1:
                 List(file, stroki);
@@ -47,11 +48,20 @@ int main() {
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
                 break;
+            case 3:
+                delete(file, stroki);
+                printf("\nWhat are you going to do now?\n");
+                scanf("%i", &i);
+                break;
             case 4:
                 find_this_MF(file, stroki);
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
                 break;
+            case 5:
+                printf("Goodbye!");
+                fclose(file);
+                exit(0);
         }
     }
     return(0);
@@ -126,7 +136,7 @@ void AddaStd(FILE* fl, int strok){
     //fflush(stdin);
     printf("Enter Surname:\n");
     Students[strok+1].Surname = read_a_string();
-    scanf("%s", Students[strok+1].Fathersname);
+    scanf("%s", Students[strok+1].Surname);
     //fflush(stdin);
     printf("Enter Name:\n");
     Students[strok+1].Name = read_a_string();
@@ -134,7 +144,7 @@ void AddaStd(FILE* fl, int strok){
     //fflush(stdin);
     printf("Enter Fathersname:\n");
     Students[strok+1].Fathersname = read_a_string();
-    scanf("%s", Students[strok+1].Surname);
+    scanf("%s", Students[strok+1].Fathersname);
     //fflush(stdin);
     printf("Enter Faculty ID:\n");
     Students[strok+1].Faculty = read_a_string();
@@ -205,4 +215,76 @@ char* read_a_string(){
     }
     *(find + i) = '\0';
     return (find);
+}
+
+void delete(FILE* fl, int strok){
+    int a;
+    int s = 0;
+    int i = 0;
+
+    char* find = read_a_string();
+
+    struct Student *Students = malloc(strok * sizeof(struct Student));
+    Students = mcdir(Students, strok, fl);
+    printf("Enter ID:\n");
+    scanf("%s", find);
+    while(strcmp (Students[s].ID, find) != 0){
+        s++;
+    }
+    printf("%-8s%-12s  %-10s  %-20s %-6s  %-20s\n", Students[s].ID, Students[s].Surname, Students[s].Name,
+           Students[s].Fathersname, Students[s].Faculty, Students[s].Dir);
+    printf("That's who I will delete\n1)Yes\n2)No\n");
+
+    scanf("%i", &a);
+    switch (a) {
+        case 1:
+            while(i != strok){
+                if(strcmp (Students[i].ID, find) == 0){
+                    FILE* f = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\bcp.txt", "w");
+                    for(int o = 0; o<strok - 1; o++){
+                        fputs(Students[o].ID,f);
+                        fputc(';', f);
+                        fputs(Students[o].Surname,f);
+                        fputc(';', f);
+                        fputs(Students[o].Name,f);
+                        fputc(';', f);
+                        fputs(Students[o].Fathersname,f);
+                        fputc(';', f);
+                        fputs(Students[o].Faculty,f);
+                        fputc(';', f);
+                        fputs(Students[o].Dir,f);
+                        fputc('\n', f);
+                    }
+                    fclose(f);
+                    FILE* fo = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\students.txt", "w");
+                    int o = 0;
+                    while(o < strok-1){
+                        if(o == s) o++;
+                        fputs(Students[o].ID,fo);
+                        fputc(';', fo);
+
+                        fputs(Students[o].Surname,fo);
+                        fputc(';', fo);
+
+                        fputs(Students[o].Name,fo);
+                        fputc(';', fo);
+
+                        fputs(Students[o].Fathersname,fo);
+                        fputc(';', fo);
+
+                        fputs(Students[o].Faculty,fo);
+                        fputc(';', fo);
+
+                        fputs(Students[o].Dir,fo);
+                        fputc('\n', fo);
+                        o++;
+                    }
+                    fclose(fo);
+                }
+                i++;
+            }
+            break;
+        case 2:
+            break;
+    }
 }

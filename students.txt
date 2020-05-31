@@ -1,6 +1,6 @@
-1BR231;Ivanchenko;Vanya;Ivashkich;IBM;"Innovatics"
-1BR232;Ivanchenko;Vanya;Ivashkich;IBM;"Innovatics"
-1BR233;Ivanchenko;Vanya;Ivashkich;IBM;"Innovatics"
-1BR234;Sevostyanov;Nikita;Alex;IU;Science
-1BR235;Sevotyanova;Daria;Alex;IU;Science
-1BR236;Sevostyanov;Michail;Alexanych;IBM;Economic
+1BR231;Sevostyanov;Nikita;Aleksandrovich;IU;IT
+1BR232;Sevostyanov;Nikita;Alexandrovich;IU;IT
+1BR233;Sevostyanov;Nikita;Aleksandrovich;IU;IT
+1BR234;Sevostyanov;Nikita;Alexandrovich;IU;IT
+1BR235;Sevostyanov;Nikita;Aleksandrovich;IU;IT
+1BR236;Sevostyanov;Nikita;Alexandrovich;IU;IT
