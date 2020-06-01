@@ -2,32 +2,44 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct User{
+    char* ID;
+    char* pswrd;
+    char* Alvl; // Уровень доступа
+};
+
 struct Student{
     char* ID;
-    char* Fathersname;
-    char* Name;
     char* Surname;
+    char* Name;
+    char* Fathersname;
     char* Faculty;
-    char* Dir;
+    char* Dir; // Направление
 };
 
 //Сигнатуры функций
 
 /*Базовые функции для обработки данных*/
-int kolvo(FILE* fl);
-char* read_a_string();
-char* Str(FILE* fl);
+int kolvo(FILE* fl); //Количество строк в файле
+char* read_a_string(); //Считать строку из потока ввода, оканчивающуюся на Энтер
+char* Str(FILE* fl); // Считать из файла отдельно то, что разделено ; или переходом на новую строку
+int WhoRU(char* pr); // Определить статус пользователя 1 - админ, 2 - обычный пользователь
 /*Создание списка*/
-void List(FILE* fl, int s);
-struct Student* mcdir(struct Student* S, int o, FILE* fl);
+void List(FILE* fl, int s); //Вывести на консоль всю базу данных
+struct Student* mcdir(struct Student* S, int o, FILE* fl); // Создат массив структур типа Студент из файла
 /*Функции БД*/
-void AddaStd(FILE* fl, int strok);
-void find_this_MF(FILE* fl, int strok);
-void delete(FILE* fl, int strok);
+void AddaStd(FILE* fl, int strok); // Добавление студента в БД
+void find_this_MF(FILE* fl, int strok); // Найти студента по АйДи
+void delete(FILE* fl, int strok); // Удалить студента по АйДи
+char* enter_a_DB(FILE* fl); // Войти в БД (логин и пароль). Возвращает строку с уровнем доступа
 
 
 int main() {
-
+    char* privelege;
+    FILE* a = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\Usr.txt", "r+");
+    privelege = enter_a_DB(a);
+    if(strcmp(privelege, "NA") == 0) exit(0);
+    int UP = WhoRU(privelege);
     int i =0;
     FILE* file = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\students.txt", "r+");
     int stroki = kolvo(file);
@@ -44,11 +56,23 @@ int main() {
                 scanf("%i", &i);
                 break;
             case 2:
+                if (UP == 2){
+                    printf("\nOnly admin can do this\n");
+                    printf("\nWhat are you going to do now?\n");
+                    scanf("%i", &i);
+                    break;
+                }
                 AddaStd(file, stroki);
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
                 break;
             case 3:
+                if (UP == 2){
+                    printf("\nOnly admin can do this\n");
+                    printf("\nWhat are you going to do now?\n");
+                    scanf("%i", &i);
+                    break;
+                }
                 delete(file, stroki);
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
@@ -82,7 +106,6 @@ struct Student* mcdir(struct Student* S, int o, FILE* fl){
     return (S);
 }
 
-
 void List(FILE* fl, int s) {
     int a = 0;
     struct Student *Students = malloc(s * sizeof(struct Student));
@@ -97,7 +120,6 @@ void List(FILE* fl, int s) {
     rewind(fl);
 }
 
-
 int kolvo(FILE* fl){
     int n = 1;
     char c = fgetc(fl);
@@ -108,7 +130,6 @@ int kolvo(FILE* fl){
     rewind(fl);
     return(n);
 }
-
 
 char* Str(FILE* fl){
     char* str = malloc(1 * sizeof(char)); //место под первую букву
@@ -287,4 +308,58 @@ void delete(FILE* fl, int strok){
         case 2:
             break;
     }
+}
+
+char* enter_a_DB(FILE* fil){
+    int s = kolvo(fil);
+    char* UsrID;
+    char* Pass;
+    int flg = 0;
+    int aflg = 0;
+    char* priv;
+    struct User* Users = malloc(s * sizeof(struct User));
+    for (int o = 0; o < s; o++){
+        Users[o].ID = Str(fil);
+        Users[o].pswrd = Str(fil);
+        Users[o].Alvl = Str(fil);
+    }
+    int o = 0;
+    printf("What's your name tho?\n");
+    UsrID = read_a_string();
+    while(o<s){
+        if (strcmp(UsrID, Users[o].ID) == 0) {
+            flg = 1;
+        }
+        o++;
+    }
+    if (flg == 0){
+        printf("There's no %s allowed in here\n", UsrID);
+        return("NA");
+    }
+    printf("What's the password then?\n");
+    Pass = read_a_string();
+    int oo = 0;
+    while(oo<s){
+        if (strcmp(Pass, Users[oo].pswrd) == 0) {
+            aflg = 1;
+            priv = Users[oo].Alvl;
+        }
+        oo++;
+    }
+    if (aflg == 0){
+        printf("That's a wrong pass\n");
+        return("NA");
+    }
+    else return(priv);
+}
+
+int WhoRU(char* priv){
+    int U;
+    if(strcmp(priv, "adm") == 0){
+        U = 1;
+    }
+    if(strcmp(priv, "usr") == 0){
+        U = 2;
+    }
+    return (U);
 }
