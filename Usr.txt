@@ -1,2 +1,3 @@
 Nikita;Pass;adm
-YaBoy;Bruh;usr
+YaBoy;Bruh;std
+BigBoss;URDEAD;decan

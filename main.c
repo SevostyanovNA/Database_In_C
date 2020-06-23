@@ -8,6 +8,14 @@ struct User{
     char* Alvl; // Уровень доступа
 };
 
+struct Book {
+    char* ISBN;
+    char* auth;
+    char* name;
+    int vsego;
+    int ostalos;
+};
+
 struct Student{
     char* ID;
     char* Surname;
@@ -20,18 +28,33 @@ struct Student{
 //Сигнатуры функций
 
 /*Базовые функции для обработки данных*/
-int kolvo(FILE* fl); //Количество строк в файле
-char* read_a_string(); //Считать строку из потока ввода, оканчивающуюся на Энтер
-char* Str(FILE* fl); // Считать из файла отдельно то, что разделено ; или переходом на новую строку
-int WhoRU(char* pr); // Определить статус пользователя 1 - админ, 2 - обычный пользователь
+
+#include "help.h"
+
 /*Создание списка*/
-void List(FILE* fl, int s); //Вывести на консоль всю базу данных
+
+void List(FILE* fl, int s); //Вывести на консоль всю базу данных Студентов
 struct Student* mcdir(struct Student* S, int o, FILE* fl); // Создат массив структур типа Студент из файла
-/*Функции БД*/
+struct Book* mcdirb(struct Book* B, int o, FILE* fl); // Аналог для типа Бук
+
+
+/*Функции БД Студентов*/
+
 void AddaStd(FILE* fl, int strok); // Добавление студента в БД
 void find_this_MF(FILE* fl, int strok); // Найти студента по АйДи
 void delete(FILE* fl, int strok); // Удалить студента по АйДи
 char* enter_a_DB(FILE* fl); // Войти в БД (логин и пароль). Возвращает строку с уровнем доступа
+int menustud(int UP, FILE* file, int stroki); //меню, использовавшееся для студентов
+
+
+/*Функции БД Книг*/
+
+int menubooks (int UP, FILE* b, int k);// Аналог менюстд
+void Listbook(FILE* fl, int s); // Вывести на консоль всю базу данных Книг
+void AddaBook(FILE* fl, int strok); // Добавить книгу
+void deleteb(FILE* b, int strok); // Удалить книгу
+void takeAbook(FILE* fb, int stroch); // Забрать книгу
+void returnAbook(FILE* fb, int stroch); // Вернуть книгу
 
 
 int main() {
@@ -42,53 +65,131 @@ int main() {
     int UP = WhoRU(privelege);
     int i =0;
     FILE* file = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\students.txt", "r+");
+    FILE* b = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\books.txt", "r+");
     int stroki = kolvo(file);
+    int kbooks = kolvo(b);
     printf("Hello, and welcome to my DB\n");
+    printf("You can only see the list of students if you are admin\n");
+    printf("Or if you are the Decan\n");
+    printf("And... ");
+    if(UP == 1) {
+        int in =0;
+        printf("You are the admin\n");
+        printf("God Bless You\n");
+        priv();
+        scanf("%d", &in);
+        while(1){
+            switch (in) {
+                case 1:
+                    menustud(UP, file, stroki);
+                    priv();
+                    scanf("%d", &in);
+                    break;
+                case 2:
+                    menubooks(UP, b, kbooks);
+                    priv();
+                    scanf("%d", &in);
+                    break;
+                    case 3:
+                        printf("Have a great time!\n");
+                        exit(0);
+            }
+        }
+    }
+    if(UP == 2) {
+        printf("You are the student\n");
+        printf("Hey man, wassup. Here are some Books DB for ya\n");
+        menubooks(UP, b, kbooks);
+        }
+    if(UP == 3){
+        printf("Oh, sorry, you are the Decan\n");
+        printf("Here are functions for you to operate the Students DB\n");
+        menustud(UP, file, stroki);
+    }
+}
+
+int menustud(int UP, FILE* file, int stroki) {
+    int i;
+        printf("What do you want to do?\n");
+        printf("1)See the list\n" "2)Add a Student\n" "3)Delete a Student by ID\n" "4)Find a student by ID\n" "5)Save 'n Exit\n");
+        scanf("%i", &i);
+        while(1) {
+            if(i<1 || i > 5) printf("No such a function");
+            switch (i) {
+                case 1:
+                    List(file, stroki);
+                    printf("\nWhat are you going to do now?\n");
+                    scanf("%i", &i);
+                    break;
+                case 2:
+                    AddaStd(file, stroki);
+                    printf("\nWhat are you going to do now?\n");
+                    scanf("%i", &i);
+                    break;
+                case 3:
+                    delete(file, stroki);
+                    printf("\nWhat are you going to do now?\n");
+                    scanf("%i", &i);
+                    break;
+                case 4:
+                    find_this_MF(file, stroki);
+                    printf("\nWhat are you going to do now?\n");
+                    scanf("%i", &i);
+                    break;
+                case 5:
+                    printf("Goodbye!\n");
+                    fclose(file);
+                    return (0);
+            }
+        }
+        return(0);
+};
+
+int menubooks (int UP, FILE* b, int k){
+    int i;
     printf("What do you want to do?\n");
-    printf("1)See the list\n" "2)Add a Student\n" "3)Delete a Student by ID\n" "4)Find a student by ID\n" "5)Save 'n Exit\n");
+    printf("1)See the list\n" "2)Add a Book (Adm)\n" "3)Delete a Book by ISBN (Adm)\n" "4)Get a Book By ISBN\n" "5)Return a Book by ISBN\n" "6)Save 'n Exit\n");
     scanf("%i", &i);
     while(1) {
-        if(i<1 || i > 5) printf("No such a function");
+        if(i<1 || i > 6) {
+            printf("No such a function");
+            scanf("%i", &i);
+            break;
+        }
         switch (i) {
             case 1:
-                List(file, stroki);
+                Listbook(b, k);
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
                 break;
             case 2:
-                if (UP == 2){
-                    printf("\nOnly admin can do this\n");
-                    printf("\nWhat are you going to do now?\n");
-                    scanf("%i", &i);
-                    break;
-                }
-                AddaStd(file, stroki);
+
+                AddaBook(b, k);
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
                 break;
             case 3:
-                if (UP == 2){
-                    printf("\nOnly admin can do this\n");
-                    printf("\nWhat are you going to do now?\n");
-                    scanf("%i", &i);
-                    break;
-                }
-                delete(file, stroki);
+                deleteb(b, k);
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
                 break;
             case 4:
-                find_this_MF(file, stroki);
+                takeAbook(b, k);
                 printf("\nWhat are you going to do now?\n");
                 scanf("%i", &i);
                 break;
             case 5:
-                printf("Goodbye!");
-                fclose(file);
-                exit(0);
+                returnAbook(b, k);
+                printf("\nWhat are you going to do now?\n");
+                scanf("%i", &i);
+                break;
+            case 6:
+                printf("Goodbye!\n");
+                fclose(b);
+                return (0);
         }
     }
-    return(0);
+    return (0);
 }
 
 struct Student* mcdir(struct Student* S, int o, FILE* fl){
@@ -120,30 +221,86 @@ void List(FILE* fl, int s) {
     rewind(fl);
 }
 
-int kolvo(FILE* fl){
-    int n = 1;
-    char c = fgetc(fl);
-    while (c != EOF){
-        if (c == '\n') n++;
-        c = fgetc(fl);
+void Listbook(FILE* b, int s) {
+    int a = 0;
+    struct Book* Books = malloc(s * sizeof(struct Book));
+    Books = mcdirb(Books, s, b);
+    printf
+            ("ISBN        Author        Name                 Total  Available\n");
+    while (a < s) {
+        printf("%-8s  %-12s  %-20s  %-5d %-2d\n", Books[a].ISBN, Books[a].auth, Books[a].name,
+               Books[a].vsego, Books[a].ostalos);
+        a++;
     }
-    rewind(fl);
-    return(n);
+    rewind(b);
 }
 
-char* Str(FILE* fl){
-    char* str = malloc(1 * sizeof(char)); //место под первую букву
+struct Book* mcdirb(struct Book* B, int o, FILE* b){
     int i = 0;
-    char c;
-    while ((c = getc(fl)) != '\n' && c != ';' && c != EOF){
-        str[i] = c;
+    rewind(b);
+    while (i < o){
+        B[i].ISBN = Str(b);
+        B[i].auth = Str(b);
+        B[i].name = Str(b);
+        B[i].vsego = char_to_int(Str(b));
+        B[i].ostalos = char_to_int(Str(b));
         i++;
-        str = realloc(str, (i+1) * sizeof(char)); // расширение строки
     }
-    str[i] = '\0'; // добавить символ конца строки
+    return (B);
+}
 
-    return(str);
+void AddaBook(FILE* blin, int strok){
+    int a = 0;
+    int ind;
+    struct Book *Books = malloc(strok * sizeof(struct Book));
+    Books = mcdirb(Books, strok, blin);
+    printf("Enter ISBN:\n");
+    Books[strok+1].ISBN = read_a_string();
+    scanf("%s", Books[strok+1].ISBN);
 
+    printf("Enter Author's Name:\n");
+    Books[strok+1].auth = read_a_string();
+    scanf("%s", Books[strok+1].auth);
+
+    printf("Enter Book's Name:\n");
+    Books[strok+1].name = read_a_string();
+    scanf("%s", Books[strok+1].name);
+
+    printf("Enter Total Count of Books:\n");
+    Books[strok+1].vsego = char_to_int(read_a_string());
+    scanf("%d", &Books[strok+1].vsego);
+
+    printf("Enter Count of Books left:\n");
+    Books[strok+1].ostalos = char_to_int(read_a_string());
+    scanf("%d", &Books[strok+1].ostalos);
+
+
+    while(a < strok){
+        if(strcmp(Books[a].ISBN, Books[strok+1].ISBN) == 0) ind = 1;
+        a++;
+    }
+    if(ind != 1){
+        fputc('\n', blin);
+
+        fputs(Books[strok+1].ISBN,blin);
+        fputc(';', blin);
+
+        fputs(Books[strok+1].auth,blin);
+        fputc(';', blin);
+
+        fputs(Books[strok+1].name,blin);
+        fputc(';', blin);
+
+        fputs(int_to_char(Books[strok+1].vsego),blin);
+        fputc(';', blin);
+
+        fputs(int_to_char(Books[strok+1].ostalos),blin);
+
+        printf("You've succesfuly added a Book to the DB\n");
+    }
+    else{
+        printf("This Book already exists in DB\n");
+    }
 }
 
 void AddaStd(FILE* fl, int strok){
@@ -222,20 +379,6 @@ void find_this_MF(FILE* fl, int strok){
         }
         a++;
     }
-}
-
-char* read_a_string(){
-    int i = 0;
-    char c;
-    char* find = malloc(1 * sizeof(char));
-    while ((c = getchar()) != '\n')
-    {
-        *(find + i) = c;
-        i++;
-        find = realloc(find, (i + 1) * sizeof(char));
-    }
-    *(find + i) = '\0';
-    return (find);
 }
 
 void delete(FILE* fl, int strok){
@@ -353,13 +496,271 @@ char* enter_a_DB(FILE* fil){
     else return(priv);
 }
 
-int WhoRU(char* priv){
-    int U;
-    if(strcmp(priv, "adm") == 0){
-        U = 1;
+void takeAbook(FILE* fb, int stroch){
+    int f = 0;
+    int h = 0;
+    struct Book* Bks = malloc(stroch * sizeof(struct Book));
+    Bks = mcdirb(Bks, stroch, fb);
+    printf("Book's ISBN:\n");
+    char* ISBN = read_a_string();
+    scanf("%s", ISBN);
+    while(f < stroch){
+        if(strcmp(Bks[f].ISBN, ISBN) == 0){
+            FILE* fo = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\books.txt", "w");
+            while (h < stroch-1){
+                if (f != 0){
+                    fputs(Bks[h].ISBN,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].auth,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].name,fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].ostalos),fo);
+                } else {
+                    Bks[h].ostalos = Bks[h].ostalos - 1;
+                    fputs(Bks[h].ISBN,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].auth,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].name,fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].ostalos),fo);
+                }
+                h++;
+                while(h < stroch-1){
+                    if(h == f) {
+                      Bks[h].ostalos = Bks[h].ostalos - 1;
+                        fputc('\n', fo);
+
+                        fputs(Bks[h].ISBN,fo);
+                        fputc(';', fo);
+
+                        fputs(Bks[h].auth,fo);
+                        fputc(';', fo);
+
+                        fputs(Bks[h].name,fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Bks[h].vsego),fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Bks[h].ostalos),fo);
+
+                        h++;
+                    }
+                    fputc('\n', fo);
+
+                    fputs(Bks[h].ISBN,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].auth,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].name,fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].ostalos),fo);
+
+
+                    h++;
+                }
+                fclose(fo);
+                printf("You've taken your book");
+            }
+        }
+       f++;
     }
-    if(strcmp(priv, "usr") == 0){
-        U = 2;
+}
+
+void returnAbook(FILE* fb, int stroch){
+    int f = 0;
+    int h = 0;
+    struct Book* Bks = malloc(stroch * sizeof(struct Book));
+    Bks = mcdirb(Bks, stroch, fb);
+    printf("Book's ISBN:\n");
+    char* ISBN = read_a_string();
+    scanf("%s", ISBN);
+    while(f < stroch){
+        if(strcmp(Bks[f].ISBN, ISBN) == 0){
+            FILE* fo = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\books.txt", "w");
+            while (h < stroch-1){
+                if (f != 0){
+                    fputs(Bks[h].ISBN,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].auth,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].name,fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].ostalos),fo);
+                } else {
+                    Bks[h].ostalos = Bks[h].ostalos + 1;
+                    fputs(Bks[h].ISBN,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].auth,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].name,fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].ostalos),fo);
+                }
+                h++;
+                while(h < stroch-1){
+                    if(h == f) {
+                        Bks[h].ostalos = Bks[h].ostalos + 1;
+                        fputc('\n', fo);
+
+                        fputs(Bks[h].ISBN,fo);
+                        fputc(';', fo);
+
+                        fputs(Bks[h].auth,fo);
+                        fputc(';', fo);
+
+                        fputs(Bks[h].name,fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Bks[h].vsego),fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Bks[h].ostalos),fo);
+
+                        h++;
+                    }
+                    fputc('\n', fo);
+
+                    fputs(Bks[h].ISBN,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].auth,fo);
+                    fputc(';', fo);
+
+                    fputs(Bks[h].name,fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputc(';', fo);
+
+                    fputs(int_to_char(Bks[h].ostalos),fo);
+
+
+                    h++;
+                }
+                fclose(fo);
+                printf("You've returned your book");
+            }
+        }
+        f++;
     }
-    return (U);
+}
+
+void deleteb(FILE* b, int strok){
+    int a;
+    int s = 0;
+    int i = 0;
+
+    char* find = read_a_string();
+
+    struct Book *Books = malloc(strok+1 * sizeof(struct Book));
+    Books = mcdirb(Books, strok, b);
+    printf("Enter ISBN:\n");
+    scanf("%s", find);
+    while(strcmp (Books[s].ISBN, find) != 0){
+        s++;
+    }
+    printf("%-10s%-12s\n", Books[s].ISBN, Books[s].name);
+    printf("That's who I will delete\n1)Yes\n2)No\n");
+
+    scanf("%i", &a);
+    switch (a) {
+        case 1:
+            while(i != strok){
+                if(strcmp (Books[i].ISBN, find) == 0){
+                    FILE* bb = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\bcpbooks.txt", "w");
+                    for(int o = 0; o<strok - 1; o++){
+
+                        fputs(Books[o].ISBN,bb);
+                        fputc(';', bb);
+                        fputs(Books[o].auth,bb);
+                        fputc(';', bb);
+                        fputs(Books[o].name,bb);
+                        fputc(';', bb);
+                        fputs(int_to_char(Books[o].vsego),bb);
+                        fputc(';', bb);
+                        fputs(int_to_char(Books[o].ostalos),bb);
+                        fputc('\n', bb);
+
+                    }
+                    fclose(bb);
+                    FILE* fo = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\books.txt", "w");
+                    int o = 0;
+                    if (o != s){
+                        fputs(Books[o].ISBN,fo);
+                        fputc(';', fo);
+
+                        fputs(Books[o].auth,fo);
+                        fputc(';', fo);
+
+                        fputs(Books[o].name,fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Books[o].vsego),fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Books[o].ostalos),fo);
+                    }
+                    o++;
+                    while(o < strok-1){
+                        if(o == s) o++;
+                        fputc('\n', fo);
+
+                        fputs(Books[o].ISBN,fo);
+                        fputc(';', fo);
+
+                        fputs(Books[o].auth,fo);
+                        fputc(';', fo);
+
+                        fputs(Books[o].name,fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Books[o].vsego),fo);
+                        fputc(';', fo);
+
+                        fputs(int_to_char(Books[o].ostalos),fo);
+
+
+                        o++;
+                    }
+                    fclose(fo);
+                }
+                i++;
+            }
+            break;
+        case 2:
+            break;
+    }
 }

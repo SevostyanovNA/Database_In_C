@@ -1,5 +1,5 @@
 1BR231;Sevostyanov;Nikita;Aleksandrovich;IU;IT
 1BR232;Sevostyanov;Nikita;Alexandrovich;IU;IT
 1BR233;Sevostyanov;Nikita;Aleksandrovich;IU;IT
-1BR234;Sevostyanov;Nikita;Alexandrovich;IU;IT
 1BR236;Sevostyanov;Nikita;Alexandrovich;IU;IT
+1BR234;SEv;SAD;ASD;AS;AS
