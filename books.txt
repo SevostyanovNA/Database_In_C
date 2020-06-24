@@ -1,3 +1,5 @@
 3523353253;Strugatskiye;Piknik na obochine;10;4
 5845908914;Ritchie;C++;13;10
 1234567890;Ya;Ya;10;10
+1234567999;Ya;Ya;10;0
+1234567000;Ya;Ya;10;9
