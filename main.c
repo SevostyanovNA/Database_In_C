@@ -12,8 +12,8 @@ struct Book {
     char* ISBN;
     char* auth;
     char* name;
-    int vsego;
-    int ostalos;
+    char* vsego;
+    char* ostalos;
 };
 
 struct Student{
@@ -229,7 +229,7 @@ void Listbook(FILE* b, int s) {
     printf
             ("ISBN        Author        Name                 Total  Available\n");
     while (a < s) {
-        printf("%-8s  %-12s  %-20s  %-5d %-2d\n", Books[a].ISBN, Books[a].auth, Books[a].name,
+        printf("%-8s  %-12s  %-20s  %-5s %-2s\n", Books[a].ISBN, Books[a].auth, Books[a].name,
                Books[a].vsego, Books[a].ostalos);
         a++;
     }
@@ -243,8 +243,8 @@ struct Book* mcdirb(struct Book* B, int o, FILE* b){
         B[i].ISBN = Str(b);
         B[i].auth = Str(b);
         B[i].name = Str(b);
-        B[i].vsego = char_to_int(Str(b));
-        B[i].ostalos = char_to_int(Str(b));
+        B[i].vsego = Str(b);
+        B[i].ostalos = Str(b);
         i++;
     }
     return (B);
@@ -268,12 +268,12 @@ void AddaBook(FILE* blin, int strok){
     scanf("%s", Books[strok+1].name);
 
     printf("Enter Total Count of Books:\n");
-    Books[strok+1].vsego = char_to_int(read_a_string());
-    scanf("%d", &Books[strok+1].vsego);
+    Books[strok+1].vsego = read_a_string();
+    scanf("%s", Books[strok+1].vsego);
 
     printf("Enter Count of Books left:\n");
-    Books[strok+1].ostalos = char_to_int(read_a_string());
-    scanf("%d", &Books[strok+1].ostalos);
+    Books[strok+1].ostalos = read_a_string();
+    scanf("%s", Books[strok+1].ostalos);
 
 
     while(a < strok){
@@ -292,10 +292,10 @@ void AddaBook(FILE* blin, int strok){
         fputs(Books[strok+1].name,blin);
         fputc(';', blin);
 
-        fputs(int_to_char(Books[strok+1].vsego),blin);
+        fputs(Books[strok+1].vsego,blin);
         fputc(';', blin);
 
-        fputs(int_to_char(Books[strok+1].ostalos),blin);
+        fputs(Books[strok+1].ostalos,blin);
 
         printf("You've succesfuly added a Book to the DB\n");
     }
@@ -507,7 +507,7 @@ void takeAbook(FILE* fb, int stroch){
     scanf("%s", ISBN);
     while(f < stroch-1){
         if(strcmp(Bks[f].ISBN, ISBN) == 0){
-            if(Bks[f].ostalos > 0){
+            if(char_to_int(Bks[f].ostalos) > 0){
                 FILE* fo = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\books.txt", "w");
                 if (f != 0){
                     fputs(Bks[h].ISBN,fo);
@@ -519,12 +519,12 @@ void takeAbook(FILE* fb, int stroch){
                     fputs(Bks[h].name,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputs(Bks[h].vsego,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].ostalos),fo);
+                    fputs(Bks[h].ostalos,fo);
                 } else {
-                    Bks[h].ostalos = Bks[h].ostalos - 1;
+                    Bks[h].ostalos = int_to_char(char_to_int(Bks[h].ostalos) - 1);
                     fputs(Bks[h].ISBN,fo);
                     fputc(';', fo);
 
@@ -534,15 +534,15 @@ void takeAbook(FILE* fb, int stroch){
                     fputs(Bks[h].name,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputs(Bks[h].vsego,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].ostalos),fo);
+                    fputs(Bks[h].ostalos,fo);
                 }
                 h++;
             while (h < stroch) {
                 if (h == f) {
-                    Bks[h].ostalos = Bks[h].ostalos - 1;
+                    Bks[h].ostalos = int_to_char(char_to_int(Bks[h].ostalos) - 1);
                     fputc('\n', fo);
 
                     fputs(Bks[h].ISBN, fo);
@@ -554,10 +554,10 @@ void takeAbook(FILE* fb, int stroch){
                     fputs(Bks[h].name, fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].vsego), fo);
+                    fputs(Bks[h].vsego, fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].ostalos), fo);
+                    fputs(Bks[h].ostalos, fo);
 
                     h++;
                 }
@@ -572,10 +572,10 @@ void takeAbook(FILE* fb, int stroch){
                 fputs(Bks[h].name, fo);
                 fputc(';', fo);
 
-                fputs(int_to_char(Bks[h].vsego), fo);
+                fputs(Bks[h].vsego, fo);
                 fputc(';', fo);
 
-                fputs(int_to_char(Bks[h].ostalos), fo);
+                fputs(Bks[h].ostalos, fo);
 
                 h++;
             }
@@ -600,9 +600,8 @@ void returnAbook(FILE* fb, int stroch){
     scanf("%s", ISBN);
     while(f < stroch){
         if(strcmp(Bks[f].ISBN, ISBN) == 0){
-            if (Bks[f].ostalos == Bks[f].vsego){
+            if (strcmp(Bks[f].ostalos, Bks[f].vsego) != 0){
             FILE* fo = fopen("C:\\Users\\Home\\CLionProjects\\Normal DB\\books.txt", "w");
-            while (h < stroch-1){
                 if (f != 0){
                     fputs(Bks[h].ISBN,fo);
                     fputc(';', fo);
@@ -613,12 +612,12 @@ void returnAbook(FILE* fb, int stroch){
                     fputs(Bks[h].name,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputs(Bks[h].vsego,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].ostalos),fo);
+                    fputs(Bks[h].ostalos,fo);
                 } else {
-                    Bks[h].ostalos = Bks[h].ostalos + 1;
+                    Bks[h].ostalos = int_to_char(char_to_int(Bks[h].ostalos) + 1);
                     fputs(Bks[h].ISBN,fo);
                     fputc(';', fo);
 
@@ -628,56 +627,55 @@ void returnAbook(FILE* fb, int stroch){
                     fputs(Bks[h].name,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputs(Bks[h].vsego,fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].ostalos),fo);
+                    fputs(Bks[h].ostalos,fo);
                 }
                 h++;
-                while(h < stroch-1){
-                    if(h == f) {
-                        Bks[h].ostalos = Bks[h].ostalos + 1;
+                while (h < stroch) {
+                    if (h == f) {
+                        Bks[h].ostalos = int_to_char(char_to_int(Bks[h].ostalos) + 1);
                         fputc('\n', fo);
 
-                        fputs(Bks[h].ISBN,fo);
+                        fputs(Bks[h].ISBN, fo);
                         fputc(';', fo);
 
-                        fputs(Bks[h].auth,fo);
+                        fputs(Bks[h].auth, fo);
                         fputc(';', fo);
 
-                        fputs(Bks[h].name,fo);
+                        fputs(Bks[h].name, fo);
                         fputc(';', fo);
 
-                        fputs(int_to_char(Bks[h].vsego),fo);
+                        fputs(Bks[h].vsego, fo);
                         fputc(';', fo);
 
-                        fputs(int_to_char(Bks[h].ostalos),fo);
+                        fputs(Bks[h].ostalos, fo);
 
                         h++;
                     }
                     fputc('\n', fo);
 
-                    fputs(Bks[h].ISBN,fo);
+                    fputs(Bks[h].ISBN, fo);
                     fputc(';', fo);
 
-                    fputs(Bks[h].auth,fo);
+                    fputs(Bks[h].auth, fo);
                     fputc(';', fo);
 
-                    fputs(Bks[h].name,fo);
+                    fputs(Bks[h].name, fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].vsego),fo);
+                    fputs(Bks[h].vsego, fo);
                     fputc(';', fo);
 
-                    fputs(int_to_char(Bks[h].ostalos),fo);
-
+                    fputs(Bks[h].ostalos, fo);
 
                     h++;
                 }
                 fclose(fo);
                 printf("You've returned your book");
-            }} else{
-                printf("It's not from our library (max. books)");
+            } else {
+                printf("Not our book");
                 return;
             }
         }
@@ -716,9 +714,9 @@ void deleteb(FILE* b, int strok){
                         fputc(';', bb);
                         fputs(Books[o].name,bb);
                         fputc(';', bb);
-                        fputs(int_to_char(Books[o].vsego),bb);
+                        fputs(Books[o].vsego,bb);
                         fputc(';', bb);
-                        fputs(int_to_char(Books[o].ostalos),bb);
+                        fputs(Books[o].ostalos,bb);
                         fputc('\n', bb);
                     }
                     fclose(bb);
@@ -734,10 +732,10 @@ void deleteb(FILE* b, int strok){
                         fputs(Books[o].name,fo);
                         fputc(';', fo);
 
-                        fputs(int_to_char(Books[o].vsego),fo);
+                        fputs(Books[o].vsego,fo);
                         fputc(';', fo);
 
-                        fputs(int_to_char(Books[o].ostalos),fo);
+                        fputs(Books[o].ostalos,fo);
                     }
                     o++;
                     while(o < strok-1){
@@ -752,10 +750,10 @@ void deleteb(FILE* b, int strok){
                         fputs(Books[o].name,fo);
                         fputc(';', fo);
 
-                        fputs(int_to_char(Books[o].vsego),fo);
+                        fputs(Books[o].vsego,fo);
                         fputc(';', fo);
 
-                        fputs(int_to_char(Books[o].ostalos),fo);
+                        fputs(Books[o].ostalos,fo);
                         if (o != strok-2) fputc('\n', fo);
 
                         o++;

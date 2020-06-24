@@ -72,6 +72,7 @@ void priv(){
     printf("3) I'm done\n");
 }
 
+
 int char_to_int(char* str){
     int digit = 0;
     int i = 0;
